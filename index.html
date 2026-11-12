@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#050912">
+<title>لوحة التحكم — Mhammed Shubair</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050912;--panel:#0a1322;--panel2:#0e1a2e;--line:rgba(121,184,245,.16);--line2:rgba(121,184,245,.32);--txt:#e8f0fa;--mut:#8da4ba;--blue:#168cff;--cyan:#61d5ff;--red:#ff6b78;--green:#35d39a;--r:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse 70% 40% at 50% 0,rgba(22,100,180,.2),transparent 70%),var(--bg);background-attachment:fixed;color:var(--txt);font-family:'Cairo','Segoe UI',Tahoma,system-ui,sans-serif;line-height:1.6;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--cyan);text-decoration:none}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+[hidden]{display:none!important}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font-weight:700;font-size:14px;transition:.2s}
+.btn:hover{border-color:var(--cyan);background:rgba(97,213,255,.08)}
+.btn.primary{background:linear-gradient(110deg,#0878e8,#28b7e9);border:0;color:#03101e}
+.btn.primary:hover{filter:brightness(1.08);box-shadow:0 8px 24px rgba(22,140,255,.35)}
+.btn.danger{color:var(--red);border-color:rgba(255,107,120,.35)}
+.btn.danger:hover{background:rgba(255,107,120,.1);border-color:var(--red)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.ibtn{width:38px;height:38px;display:inline-grid;place-items:center;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);transition:.2s}
+.ibtn:hover{border-color:var(--cyan);color:var(--cyan)}
+.ibtn.danger:hover{border-color:var(--red);color:var(--red)}
+.ibtn[disabled]{opacity:.3;pointer-events:none}
+/* boot + login */
+#boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--cyan);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.lcard{width:100%;max-width:410px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:34px 28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.lcard h1{font-size:26px;font-weight:800;margin-bottom:4px}
+.lcard p.sub{color:var(--mut);margin-bottom:24px;font-size:14px}
+.err{color:var(--red);font-size:13.5px;margin:10px 0 0;min-height:20px}
+.link{background:none;border:0;color:var(--cyan);font-size:13.5px;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+/* layout */
+#app{display:flex;min-height:100vh}
+#side{width:260px;flex:0 0 260px;background:rgba(7,13,24,.92);border-inline-start:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto;order:0}
+.brand{font-weight:800;font-size:19px;padding:6px 12px 2px;letter-spacing:-.01em}
+.brand small{display:block;font-weight:600;font-size:12px;color:var(--mut)}
+#side nav{display:flex;flex-direction:column;gap:3px;margin-top:18px}
+.nv{display:flex;align-items:center;gap:12px;width:100%;text-align:start;padding:11px 14px;border-radius:12px;border:1px solid transparent;background:none;color:#b7c7da;font-weight:600;font-size:15px;transition:.2s}
+.nv:hover{background:rgba(255,255,255,.04);color:#fff}
+.nv.on{background:linear-gradient(110deg,rgba(8,120,232,.28),rgba(40,183,233,.14));border-color:var(--line2);color:#fff}
+.side-foot{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:8px}
+#main{flex:1;min-width:0}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;height:62px;padding:0 clamp(16px,3vw,34px);background:rgba(5,9,18,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top h2{font-size:19px;font-weight:800;flex:1}
+#burger{display:none}
+.dirty{display:none;align-items:center;gap:7px;font-size:12.5px;color:#ffc46b}
+.dirty:before{content:"";width:8px;height:8px;border-radius:50%;background:#ffc46b}
+.dirty.on{display:inline-flex}
+#view{padding:clamp(16px,3vw,34px);max-width:980px;margin:0 auto;padding-bottom:110px}
+/* cards & fields */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card .desc{color:var(--mut);font-size:13.5px;margin:-6px 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld{margin-bottom:14px}.fld:last-child{margin-bottom:0}
+.fld label{display:block;font-size:13.5px;font-weight:700;color:#b7c7da;margin-bottom:6px}
+.fld small{display:block;color:var(--mut);font-size:12.5px;margin-top:5px}
+input[type=text],input[type=email],input[type=password],input[type=url],input[type=number],textarea,select{width:100%;background:#07101d;border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:15px;outline:none;transition:.2s}
+input:focus,textarea:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(97,213,255,.12)}
+textarea{resize:vertical;min-height:80px}
+input[type=color]{width:46px;height:42px;border:1px solid var(--line);border-radius:10px;background:#07101d;padding:3px}
+.ltr{direction:ltr;text-align:left}
+.savebar{position:fixed;inset-inline:0;bottom:0;z-index:25;display:flex;justify-content:center;padding:14px;background:linear-gradient(transparent,rgba(5,9,18,.95) 40%);pointer-events:none}
+.savebar .btn{pointer-events:auto;min-width:230px;padding:13px 26px;font-size:15px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+@media(min-width:861px){.savebar{inset-inline-start:260px}}
+/* switch */
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:#07101d;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.sw b{font-weight:700;font-size:14.5px}
+.sw input{display:none}
+.sw i{width:44px;height:26px;border-radius:30px;background:#223149;position:relative;transition:.25s;flex:0 0 auto}
+.sw i:after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+.sw input:checked+i{background:var(--blue)}
+.sw input:checked+i:after{inset-inline-start:21px}
+/* list editor */
+.lrow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.lrow .grow{flex:1;display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.lrow input{padding:9px 12px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chipx{display:inline-flex;align-items:center;gap:6px;padding:7px 8px 7px 14px;border-radius:30px;background:rgba(97,213,255,.08);border:1px solid var(--line2);font-size:14px;direction:ltr}
+.chipx button{border:0;background:rgba(255,255,255,.08);color:#fff;width:22px;height:22px;border-radius:50%;line-height:1;font-size:14px}
+.chipx button:hover{background:var(--red)}
+.addrow{display:flex;gap:8px}
+/* image field */
+.imgf{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.imgf .pv{width:150px;height:110px;border-radius:14px;border:1px dashed var(--line2);background:#07101d center/cover no-repeat;display:grid;place-items:center;color:var(--mut);font-size:12.5px;text-align:center;overflow:hidden}
+.imgf .pv.contain{background-size:contain}
+.imgf .pv.chk{background-color:#0e1a2e}
+.imgf .acts{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.imgf .note{color:var(--mut);font-size:12.5px}
+/* ticker / icons */
+.strip{display:flex;gap:30px;justify-content:center;align-items:center;flex-wrap:wrap;padding:22px;border-radius:14px;background:#07101d;border:1px solid var(--line);color:#7d92a9;margin-bottom:16px}
+.strip svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn{width:46px;height:46px;border-radius:12px;border:1px solid var(--line2);background:#07101d;display:grid;place-items:center;color:var(--cyan);flex:0 0 auto}
+.iconbtn svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px}
+.igrid button{aspect-ratio:1;border-radius:14px;border:1px solid var(--line);background:#07101d;display:grid;place-items:center;gap:2px;color:#b7c7da;transition:.2s;padding:6px}
+.igrid button:hover,.igrid button.on{border-color:var(--cyan);color:var(--cyan);background:rgba(97,213,255,.08)}
+.igrid svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* works */
+.wlist{display:flex;flex-direction:column;gap:12px}
+.witem{display:flex;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.witem.off{opacity:.55}
+.wthumb{width:96px;height:64px;border-radius:12px;flex:0 0 auto;background:radial-gradient(circle at 70% 25%,var(--g,#1478b4),transparent 55%),linear-gradient(135deg,#142f48,#07101b 75%) center/cover;border:1px solid var(--line)}
+.winfo{flex:1;min-width:0}
+.winfo b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.winfo span{display:block;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:start}
+.wact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;background:rgba(255,196,107,.14);color:#ffc46b;margin-inline-start:6px;font-weight:700;vertical-align:middle}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid transparent}
+.swatches button.on{border-color:#fff}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stat b{display:block;font-size:30px;font-weight:800;line-height:1.1;background:linear-gradient(110deg,#0878e8,#61d5ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{color:var(--mut);font-size:13.5px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tile{display:flex;align-items:center;gap:12px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);color:var(--txt);font-weight:700;transition:.2s;text-align:start}
+.tile:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.tile svg{color:var(--cyan)}
+/* setup */
+.steps{counter-reset:s;list-style:none;display:flex;flex-direction:column;gap:12px}
+.steps li{counter-increment:s;padding-inline-start:44px;position:relative;font-size:14.5px}
+.steps li:before{content:counter(s);position:absolute;inset-inline-start:0;top:0;width:30px;height:30px;border-radius:50%;background:rgba(97,213,255,.12);border:1px solid var(--line2);display:grid;place-items:center;font-weight:800;color:var(--cyan);font-size:14px}
+pre.code{direction:ltr;text-align:left;background:#040a14;border:1px solid var(--line);border-radius:12px;padding:16px;font:13px/1.65 ui-monospace,Menlo,Consolas,monospace;overflow:auto;color:#bcd6f2;white-space:pre}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:30px;font-size:13px;font-weight:700}
+.pill.ok{background:rgba(53,211,154,.12);color:var(--green)}
+.pill.no{background:rgba(255,107,120,.12);color:var(--red)}
+.pill.mid{background:rgba(255,196,107,.12);color:#ffc46b}
+/* modal / toast */
+#modal{position:fixed;inset:0;z-index:60;background:rgba(2,5,10,.72);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+#modal.open{display:flex}
+.sheet{width:100%;max-width:640px;max-height:92vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line2);border-radius:22px 22px 0 0;padding:22px;animation:up .28s ease}
+@media(min-width:700px){#modal{align-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h3{font-size:18px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.sheet .foot{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+#toast{position:fixed;inset-inline:0;bottom:84px;display:flex;justify-content:center;z-index:90;pointer-events:none}
+#toast div{background:#12243b;border:1px solid var(--line2);padding:12px 22px;border-radius:30px;font-weight:700;font-size:14.5px;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:up .25s ease;max-width:92vw;text-align:center}
+#toast div.bad{border-color:var(--red);color:#ffd5d9}
+#toast div.good{border-color:var(--green)}
+.empty{text-align:center;padding:34px 16px;color:var(--mut)}
+/* mobile */
+@media(max-width:860px){
+ #app{display:block}
+ #side{position:fixed;inset-block:0;inset-inline-start:0;z-index:50;width:min(300px,86vw);transform:translateX(105%);transition:transform .3s ease;box-shadow:-20px 0 60px rgba(0,0,0,.6)}
+ body.nav-open #side{transform:none}
+ #scrim{position:fixed;inset:0;background:rgba(2,5,10,.6);z-index:45;display:none}
+ body.nav-open #scrim{display:block}
+ #burger{display:inline-grid}
+ .stats{grid-template-columns:1fr 1fr}
+ .grid2{grid-template-columns:1fr}
+ .lrow:not(.nw){flex-wrap:wrap}.lrow .grow{grid-template-columns:1fr;flex:1 1 100%}.lrow.nw .grow{flex:1 1 0;min-width:0}.lrow.nw .ibtn{width:34px;height:34px}.lrow.nw{gap:6px}
+ .witem{flex-wrap:wrap}.wact{width:100%;justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div id="boot"><div class="spin"></div></div>
+
+<section id="login" hidden>
+ <div class="lcard">
+  <h1>لوحة التحكم</h1>
+  <p class="sub">Mhammed Shubair — سجّل دخولك لإدارة الموقع</p>
+  <form id="lform" novalidate>
+   <div class="fld"><label for="lem">البريد الإلكتروني</label><input id="lem" type="email" class="ltr" autocomplete="username" inputmode="email"></div>
+   <div class="fld"><label for="lpw">كلمة المرور</label><input id="lpw" type="password" class="ltr" autocomplete="current-password"></div>
+   <button class="btn primary" id="lbtn" style="width:100%;margin-top:6px" type="submit">دخول</button>
+   <p class="err" id="lerr"></p>
+   <button class="link" id="lreset" type="button">نسيت كلمة المرور؟</button>
+  </form>
+ </div>
+</section>
+
+<div id="app" hidden>
+ <aside id="side">
+  <div class="brand">Mhammed Shubair<small>لوحة تحكم الموقع</small></div>
+  <nav id="nav"></nav>
+  <div class="side-foot">
+   <a class="btn" href="index.html" target="_blank" rel="noopener">عرض الموقع</a>
+   <button class="btn danger" id="logout" type="button">تسجيل الخروج</button>
+  </div>
+ </aside>
+ <div id="scrim"></div>
+ <div id="main">
+  <header class="top">
+   <button class="ibtn" id="burger" type="button" aria-label="القائمة"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+   <h2 id="ptitle"></h2>
+   <span class="dirty" id="dirty">تغييرات غير محفوظة</span>
+  </header>
+  <div id="view"></div>
+ </div>
+</div>
+<div id="modal"></div>
+<div id="toast"></div>
+
+<script type="module">
+/* ================= Config ================= */
+const CFG={apiKey:"AIzaSyCUeAToj1DIgCuM7pL06uI3CZYDDIe6_rg",authDomain:"mohammed-portfolio-212c0.firebaseapp.com",projectId:"mohammed-portfolio-212c0",storageBucket:"mohammed-portfolio-212c0.firebasestorage.app",messagingSenderId:"1075573743797",appId:"1:1075573743797:web:8d8ee4d0929287936d1efc",measurementId:"G-RVZ0VXP9JE"};
+const SDK='https://www.gstatic.com/firebasejs/10.14.1/';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* ================= Icons ================= */
+const UI={
+ grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+ home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+ zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+ film:'<rect x="2" y="2" width="20" height="20" rx="2.18"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/>',
+ user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+ foot:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15h18"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
+ shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+ edit:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+ trash:'<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>',
+ up:'<path d="m18 15-6-6-6 6"/>',down:'<path d="m6 9 6 6 6-6"/>',
+ eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ eyeoff:'<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M2 2l20 20"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>'
+};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24">${UI[n]}</svg>`;
+/* site icon library (same keys as index.html) */
+const ICONS={video:'<rect x="2" y="6" width="13" height="12" rx="2"/><path d="m15 10 7-4v12l-7-4z"/>',scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',palette:'<circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.12a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/>',eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',megaphone:'<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',mic:'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>',play:'<circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4V8z"/>',image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',pen:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',layers:'<path d="m12 2 10 5-10 5L2 7l10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',headphones:'<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',star:'<path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',aperture:'<circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16 3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/>',clapper:'<path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3L20.2 6z"/><path d="m6.2 5.3 3.1 3.9M12.4 3.4l3.1 4"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"/>',sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',type:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/>',film:'<rect x="2" y="2" width="20" height="20" rx="2.18"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/>',bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/>',users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'};
+const ICON_NAMES={video:'كاميرا فيديو',scissors:'مقص (مونتاج)',palette:'ألوان',eye:'عين',megaphone:'إعلان',camera:'كاميرا',music:'موسيقى',mic:'مايك',play:'تشغيل',image:'صورة',pen:'قلم',layers:'طبقات',zap:'برق',heart:'قلب',globe:'عالم',monitor:'شاشة',headphones:'سماعات',star:'نجمة',sun:'شمس',aperture:'عدسة',clapper:'كلاكيت',sliders:'ضبط',type:'نص',film:'شريط فيلم',bulb:'فكرة',users:'أشخاص'};
+const svgI=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]||ICONS.star}</svg>`;
+
+/* ================= Defaults (match the site as shipped) ================= */
+const DEF={
+ hero:{name:'Mhammed Shubair',role:'Visual storyteller · Filmmaker',text:'I turn ideas into visual experiences. From cinematic filmmaking to polished edits, I create stories that make people stop, feel, and remember.',btnPrimary:'Explore my work',btnSecondary:"Let's talk",btnCv:'Download CV',showCv:true,seoTitle:'Mhammed Shubair — Filmmaker & Video Editor',photo:''},
+ ticker:{items:[{label:'Filmmaking',icon:'video'},{label:'Video editing',icon:'scissors'},{label:'Color grading',icon:'palette'},{label:'Visual storytelling',icon:'eye'},{label:'Commercials',icon:'megaphone'}]},
+ about:{title:"Hi, I'm Mhammed Shubair",text:"I'm Mhammed Shubair, a filmmaker and video editor focused on creating cinematic visuals and meaningful content for brands, creators, and people with a story to tell. I care about the details — the light, the rhythm, the color, and the emotion behind every shot.",chips:['Filmmaking','Video Editing','Color Grading','Visual Storytelling','Commercials','Post Production'],image:''},
+ contact:{title:"Let's create\nsomething real.",email:'hello@mhammedshubair.com',links:[{label:'Instagram',url:'https://instagram.com/mhammedshubair'},{label:'WhatsApp',url:'https://wa.me/970000000000'}],cvLabel:'Download CV'},
+ footer:{text:'© 2026 Mhammed Shubair',links:[]},
+ cv:{data:'',fileName:'',url:''},
+ settings:{worksCustom:false}
+};
+const DEMO_WORKS=[
+ {title:'Cinematic Film',kind:'Brand Film',role:'Direction & Edit',year:'2026',glow:'#087cbd'},
+ {title:'The Blue Hour',kind:'Commercial',role:'Color Grading',year:'2025',glow:'#14558a'},
+ {title:'Human Stories',kind:'Documentary',role:'Editing',year:'2025',glow:'#3c704f'},
+ {title:'Motion / Energy',kind:'Social Campaign',role:'Production',year:'2024',glow:'#76502c'},
+ {title:'Visual Identity',kind:'Creative Film',role:'Post Production',year:'2024',glow:'#4b3e83'}];
+const GLOWS=['#087cbd','#14558a','#3c704f','#76502c','#4b3e83','#8a2f4b','#2f8a86','#a5772a'];
+
+/* ================= State ================= */
+let fb={},db=null,auth=null,user=null,cur='overview',dirty=false;
+const S={exists:{},works:[],stats:{}};
+for(const k in DEF)S[k]=clone(DEF[k]);
+
+/* ================= UI helpers ================= */
+function toast(msg,type=''){const t=$('#toast');t.innerHTML='';const d=document.createElement('div');d.textContent=msg;if(type)d.className=type;t.appendChild(d);clearTimeout(toast.t);toast.t=setTimeout(()=>t.innerHTML='',3400)}
+function setDirty(v){dirty=v;$('#dirty').classList.toggle('on',v)}
+function errMsg(e){const c=(e&&e.code)||'';const m=(e&&e.message)||'';
+ if(c.includes('permission-denied'))return'ما عندك صلاحية — راجع صفحة «الإعداد» وانسخ القواعد (Rules) في Firebase';
+ if(/exceeds the maximum|too large|1048576/i.test(m))return'الحجم كبير جداً — صغّر الصورة أو الملف';
+ if(c.includes('unavailable')||c.includes('network'))return'ما في اتصال بالإنترنت';
+ return'صار خطأ: '+(c||m||'غير معروف')}
+function openModal(html,onMount){const m=$('#modal');m.innerHTML=`<div class="sheet">${html}</div>`;m.classList.add('open');document.body.style.overflow='hidden';onMount&&onMount($('.sheet',m))}
+function closeModal(){const m=$('#modal');m.classList.remove('open');m.innerHTML='';document.body.style.overflow=''}
+$('#modal').addEventListener('mousedown',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classList.contains('open'))closeModal()});
+
+/* form helpers */
+const F=(o,k,label,x={})=>`<div class="fld"><label>${label}</label>${x.area?`<textarea data-k="${k}" rows="${x.rows||3}" dir="auto" placeholder="${esc(x.ph||'')}">${esc(o[k])}</textarea>`:`<input data-k="${k}" type="${x.type||'text'}" dir="${x.ltr?'ltr':'auto'}" ${x.ltr?'class="ltr"':''} value="${esc(o[k])}" placeholder="${esc(x.ph||'')}" ${x.max?`maxlength="${x.max}"`:''}>`}${x.hint?`<small>${x.hint}</small>`:''}</div>`;
+function bind(root,o){$$('[data-k]',root).forEach(el=>{const ev=el.type==='checkbox'?'change':'input';el.addEventListener(ev,()=>{o[el.dataset.k]=el.type==='checkbox'?el.checked:el.value;setDirty(true)})})}
+const saveBar=n=>`<div class="savebar"><button class="btn primary" data-save="${n}" type="button">حفظ التغييرات</button></div>`;
+const SW=(o,k,label)=>`<label class="sw"><b>${label}</b><input type="checkbox" data-k="${k}" ${o[k]!==false&&o[k]?'checked':''}><i></i></label>`;
+
+/* ---- image compression (stored inside Firestore as data-URL) ---- */
+async function loadBmp(file){if(window.createImageBitmap){try{return await createImageBitmap(file)}catch(e){}}
+ return await new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{res(im)};im.onerror=rej;im.src=u})}
+async function compress(file,{maxW=1400,maxH=1400,limit=760000,alpha=false}={}){
+ const bmp=await loadBmp(file);const w0=bmp.width||bmp.naturalWidth,h0=bmp.height||bmp.naturalHeight;let scale=Math.min(1,maxW/w0,maxH/h0),q=.86;
+ for(let i=0;i<9;i++){const w=Math.max(1,Math.round(w0*scale)),h=Math.max(1,Math.round(h0*scale));const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  let out;if(alpha){x.drawImage(bmp,0,0,w,h);out=c.toDataURL('image/webp',q);if(!out.startsWith('data:image/webp'))out=c.toDataURL('image/png')}
+  else{x.fillStyle='#07101b';x.fillRect(0,0,w,h);x.drawImage(bmp,0,0,w,h);out=c.toDataURL('image/jpeg',q)}
+  if(out.length<=limit)return out;q=Math.max(.5,q-.08);scale*=.86}
+ throw new Error('الصورة كبيرة، جرّب صورة أصغر')}
+function imageField(box,obj,prop,{alpha=false,maxW=1400,maxH=1400,limit=760000,contain=false,note='',emptyText='بدون صورة'}={}){
+ const draw=()=>{const v=obj[prop];box.innerHTML=`<div class="imgf"><div class="pv ${contain?'contain':''} ${alpha?'chk':''}" style="${v?`background-image:url('${v}')`:''}">${v?'':esc(emptyText)}</div><div class="acts"><label class="btn sm" style="cursor:pointer">اختيار صورة<input type="file" accept="image/*" hidden></label>${v?'<button class="btn sm danger" type="button" data-rm>حذف / رجوع للافتراضي</button>':''}<span class="note">${note}</span></div></div>`;
+  $('input',box).onchange=async e=>{const f=e.target.files[0];if(!f)return;try{toast('جاري تجهيز الصورة…');obj[prop]=await compress(f,{alpha,maxW,maxH,limit});setDirty(true);draw();toast('تم اختيار الصورة — اضغط حفظ','good')}catch(er){toast(er.message||'تعذر قراءة الصورة','bad')}};
+  const rm=$('[data-rm]',box);if(rm)rm.onclick=()=>{obj[prop]='';setDirty(true);draw()}};
+ draw()}
+
+/* ---- reusable list editors ---- */
+function linksEditor(box,arr){const draw=()=>{box.innerHTML=(arr.length?'':'<div class="empty" style="padding:14px">ما في روابط</div>')+arr.map((l,i)=>`<div class="lrow" data-i="${i}"><div class="grow"><input type="text" data-f="label" dir="auto" placeholder="الاسم (مثال: Instagram)" value="${esc(l.label)}"><input type="text" data-f="url" class="ltr" placeholder="https://…" value="${esc(l.url)}"></div><button class="ibtn" type="button" data-a="up" ${i?'':'disabled'}>${ic('up')}</button><button class="ibtn" type="button" data-a="dn" ${i<arr.length-1?'':'disabled'}>${ic('down')}</button><button class="ibtn danger" type="button" data-a="rm">${ic('trash')}</button></div>`).join('')+`<button class="btn sm" type="button" data-a="add">${ic('plus')} إضافة رابط</button>`;
+  $$('.lrow',box).forEach(r=>{const i=+r.dataset.i;$$('input',r).forEach(inp=>inp.oninput=()=>{arr[i][inp.dataset.f]=inp.value;setDirty(true)});
+   r.onclick=e=>{const a=e.target.closest('[data-a]');if(!a)return;if(a.dataset.a==='rm')arr.splice(i,1);else if(a.dataset.a==='up')[arr[i-1],arr[i]]=[arr[i],arr[i-1]];else if(a.dataset.a==='dn')[arr[i+1],arr[i]]=[arr[i],arr[i+1]];setDirty(true);draw()}});
+  const add=$('[data-a=add]',box);add.onclick=()=>{arr.push({label:'',url:''});setDirty(true);draw();const ins=$$('.lrow input',box);ins[ins.length-2]?.focus()}};draw()}
+function chipsEditor(box,arr){const draw=()=>{box.innerHTML=`<div class="chips">${arr.map((c,i)=>`<span class="chipx">${esc(c)}<button type="button" data-i="${i}" aria-label="حذف">×</button></span>`).join('')}</div><div class="addrow"><input type="text" dir="auto" placeholder="اكتب كلمة واضغط Enter…"><button class="btn" type="button">إضافة</button></div>`;
+  const inp=$('input',box),add=()=>{const v=inp.value.trim();if(!v)return;arr.push(v);setDirty(true);draw();$('input',box).focus()};
+  $('.addrow .btn',box).onclick=add;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}};
+  $$('.chipx button',box).forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);setDirty(true);draw()})};draw()}
+
+/* ================= Pages ================= */
+const NAV=[['overview','نظرة عامة','grid'],['home','الصفحة الرئيسية','home'],['skills','شريط الأيقونات','zap'],['works','الأعمال','film'],['about','من أنا','user'],['contact','التواصل والروابط','mail'],['footer','الفوتر','foot'],['cv','السيرة الذاتية CV','file'],['setup','الإعداد والأمان','shield']];
+const P={};
+
+P.overview=v=>{const st=S.stats||{};const n=x=>(x||0).toLocaleString('en');
+ v.innerHTML=`<div class="stats"><div class="stat"><b>${n(st.views)}</b><span>زيارات الموقع</span></div><div class="stat"><b>${n(st.works)}</b><span>ضغطات على الأعمال</span></div><div class="stat"><b>${n(st.cv)}</b><span>تحميلات الـ CV</span></div><div class="stat"><b>${n(st.contact)}</b><span>ضغطات التواصل</span></div></div>
+ <div class="card"><h3>إدارة صفحات الموقع</h3><div class="tiles">${NAV.filter(x=>x[0]!=='overview').map(x=>`<button class="tile" data-go="${x[0]}" type="button">${ic(x[2])}<span>${x[1]}</span></button>`).join('')}</div></div>
+ <div class="card"><h3>ملخص</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><span class="pill ${S.works.length?'ok':'mid'}">${S.works.length} أعمال</span><span class="pill ok">${S.ticker.items.length} أيقونات بالشريط</span><span class="pill ${S.cv.data||S.cv.url?'ok':'mid'}">${S.cv.data||S.cv.url?'CV مرفوع':'لا يوجد CV'}</span></div>
+ <p class="desc" style="margin:14px 0 0">الإحصائيات تُحسب من الزوّار الحقيقيين فقط (ما بتنحسب لما تفتح الموقع من جهازك كملف). </p></div>
+ <button class="btn danger sm" id="rstStats" type="button">تصفير الإحصائيات</button>`;
+ $('#rstStats').onclick=async()=>{if(!confirm('تصفير كل الإحصائيات؟'))return;try{await fb.deleteDoc(fb.doc(db,'stats','total'));S.stats={};toast('تم التصفير','good');P.overview(v)}catch(e){toast(errMsg(e),'bad')}}};
+
+P.home=v=>{const h=S.hero;
+ v.innerHTML=`<div class="card"><h3>النصوص الرئيسية</h3>${F(h,'name','الاسم',{ltr:0})}${F(h,'role','المسمى (تحت الاسم)')}${F(h,'text','الوصف القصير',{area:1,rows:4})}</div>
+ <div class="card"><h3>الأزرار</h3><div class="grid2">${F(h,'btnPrimary','نص الزر الأول (يودّي للأعمال)')}${F(h,'btnSecondary','نص الزر الثاني (يودّي للتواصل)')}</div>${F(h,'btnCv','نص زر تحميل السيرة الذاتية')}</div>
+ <div class="card"><h3>صورة الواجهة</h3><p class="desc">يفضّل صورة بخلفية شفافة (PNG أو WebP). إذا ما اخترت صورة بتضل الصورة الأصلية.</p><div id="imgHero"></div></div>
+ <div class="card"><h3>عنوان تبويب المتصفح</h3>${F(h,'seoTitle','العنوان',{hint:'بيظهر في تبويب المتصفح ونتائج جوجل'})}</div>${saveBar('hero')}`;
+ bind(v,h);imageField($('#imgHero'),h,'photo',{alpha:true,maxW:1100,maxH:1100,limit:780000,contain:true,note:'بتتصغّر أوتوماتيك لحجم مناسب',emptyText:'الصورة الأصلية'})};
+
+P.skills=v=>{const items=S.ticker.items;
+ const draw=()=>{v.innerHTML=`<div class="card"><h3>معاينة الشريط</h3><div class="strip" id="strip">${items.length?items.map(i=>`<span title="${esc(i.label)}">${svgI(i.icon)}</span>`).join(''):'<span style="font-size:14px">الشريط مخفي (ما في عناصر)</span>'}</div>
+ <p class="desc">الأيقونات اللي بتظهر تحت الصفحة الرئيسية. بتتحرك أوتوماتيك بالموقع.</p>
+ ${items.map((it,i)=>`<div class="lrow nw" data-i="${i}"><button class="iconbtn" type="button" data-a="pick" aria-label="اختيار أيقونة">${svgI(it.icon)}</button><div class="grow" style="grid-template-columns:1fr"><input type="text" dir="auto" data-f="label" placeholder="اسم المهارة (للقارئ الصوتي والتلميح)" value="${esc(it.label)}"></div><button class="ibtn" type="button" data-a="up" ${i?'':'disabled'}>${ic('up')}</button><button class="ibtn" type="button" data-a="dn" ${i<items.length-1?'':'disabled'}>${ic('down')}</button><button class="ibtn danger" type="button" data-a="rm">${ic('trash')}</button></div>`).join('')}
+ <button class="btn sm" id="addIt" type="button">${ic('plus')} إضافة أيقونة</button></div>${saveBar('ticker')}`;
+  $$('.lrow',v).forEach(r=>{const i=+r.dataset.i;$('input',r).oninput=e=>{items[i].label=e.target.value;setDirty(true)};
+   r.onclick=e=>{const a=e.target.closest('[data-a]');if(!a)return;const t=a.dataset.a;if(t==='rm'){items.splice(i,1)}else if(t==='up')[items[i-1],items[i]]=[items[i],items[i-1]];else if(t==='dn')[items[i+1],items[i]]=[items[i],items[i+1]];else if(t==='pick'){pick(items[i],draw);return}setDirty(true);draw()}});
+  $('#addIt').onclick=()=>{const n={label:'',icon:'star'};items.push(n);setDirty(true);pick(n,draw,true)}};
+ const pick=(it,done,isNew)=>openModal(`<h3>اختر أيقونة <button class="ibtn" type="button" id="mx">${ic('x')}</button></h3><div class="igrid">${Object.keys(ICONS).map(k=>`<button type="button" data-k="${k}" class="${k===it.icon?'on':''}" title="${ICON_NAMES[k]||k}">${svgI(k)}</button>`).join('')}</div>`,m=>{$('#mx',m).onclick=()=>{closeModal();done()};$$('.igrid button',m).forEach(b=>b.onclick=()=>{it.icon=b.dataset.k;if(!it.label)it.label=ICON_NAMES[b.dataset.k]||'';setDirty(true);closeModal();done()})});
+ draw()};
+
+/* ---- works ---- */
+async function touchWorksFlag(){if(!S.settings.worksCustom){S.settings.worksCustom=true;await fb.setDoc(fb.doc(db,'site','settings'),{worksCustom:true},{merge:true})}}
+function sortWorks(){S.works.sort((a,b)=>(a.order||0)-(b.order||0))}
+async function writeOrder(list){const b=fb.writeBatch(db);list.forEach(w=>b.update(fb.doc(db,'works',w.id),{order:w.order}));await b.commit()}
+P.works=v=>{sortWorks();const W=S.works;
+ v.innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><button class="btn primary" id="addW" type="button">${ic('plus')} إضافة عمل</button>${W.length?'':'<button class="btn" id="demoW" type="button">استيراد الأعمال التجريبية الحالية</button>'}</div>
+ ${W.length?`<p class="desc" style="color:var(--mut);font-size:13.5px;margin-bottom:12px">أول 4 أعمال بتظهر بالصفحة الرئيسية، والباقي بصفحة «View all work». التصنيفات بتنعمل أوتوماتيك من حقل «النوع».</p>`:''}
+ <div class="wlist">${W.length?W.map((w,i)=>`<div class="witem ${w.visible===false?'off':''}" data-id="${w.id}"><div class="wthumb" style="--g:${esc(w.glow||'#14558a')};${w.cover?`background-image:url('${w.cover}')`:''}"></div><div class="winfo"><b>${esc(w.title)||'بدون عنوان'}${w.visible===false?'<span class="badge">مخفي</span>':''}</b><span>${esc([w.kind,w.role,w.year].filter(Boolean).join(' · '))}</span></div><div class="wact"><button class="ibtn" data-a="up" ${i?'':'disabled'} aria-label="فوق">${ic('up')}</button><button class="ibtn" data-a="dn" ${i<W.length-1?'':'disabled'} aria-label="تحت">${ic('down')}</button><button class="ibtn" data-a="vis" aria-label="إظهار/إخفاء">${ic(w.visible===false?'eyeoff':'eye')}</button><button class="ibtn" data-a="edit" aria-label="تعديل">${ic('edit')}</button><button class="ibtn danger" data-a="rm" aria-label="حذف">${ic('trash')}</button></div></div>`).join(''):'<div class="empty">ما في أعمال بعد. أضف عمل جديد أو استورد الأعمال التجريبية لتعدّلها.</div>'}</div>`;
+ $('#addW').onclick=()=>workForm(null);
+ const dm=$('#demoW');if(dm)dm.onclick=async()=>{try{dm.disabled=true;const b=fb.writeBatch(db);DEMO_WORKS.forEach((w,i)=>{const id='w_'+Date.now().toString(36)+i;b.set(fb.doc(db,'works',id),{...w,video:'',cover:'',visible:true,order:i+1});S.works.push({...w,id,video:'',cover:'',visible:true,order:i+1})});await b.commit();await touchWorksFlag();toast('تم الاستيراد','good');P.works(v)}catch(e){toast(errMsg(e),'bad');dm.disabled=false}};
+ $$('.witem',v).forEach(el=>el.onclick=async e=>{const a=e.target.closest('[data-a]');if(!a)return;const id=el.dataset.id,i=W.findIndex(x=>x.id===id),w=W[i];
+  try{if(a.dataset.a==='edit')return workForm(w);
+   if(a.dataset.a==='vis'){w.visible=w.visible===false;await fb.updateDoc(fb.doc(db,'works',id),{visible:w.visible});toast(w.visible?'ظاهر بالموقع':'تم الإخفاء','good')}
+   else if(a.dataset.a==='rm'){if(!confirm('حذف «'+(w.title||'العمل')+'» نهائياً؟'))return;await fb.deleteDoc(fb.doc(db,'works',id));W.splice(i,1);await touchWorksFlag();toast('تم الحذف','good')}
+   else{const j=a.dataset.a==='up'?i-1:i+1;const o=W[j];if(!o)return;const t=w.order;w.order=o.order;o.order=t;if(w.order===o.order){W.forEach((x,k)=>x.order=k+1);[W[i],W[j]]=[W[j],W[i]];W.forEach((x,k)=>x.order=k+1)}await writeOrder(W)}
+   P.works(v)}catch(er){toast(errMsg(er),'bad')}})};
+function workForm(w){const isNew=!w;const d=w?{...w}:{title:'',kind:'',role:'',year:String(new Date().getFullYear()),glow:GLOWS[S.works.length%GLOWS.length],video:'',cover:'',visible:true};
+ const kinds=[...new Set(S.works.map(x=>x.kind).filter(Boolean))];
+ openModal(`<h3>${isNew?'عمل جديد':'تعديل العمل'} <button class="ibtn" type="button" id="mx">${ic('x')}</button></h3>
+ ${F(d,'title','عنوان العمل')}<div class="grid2"><div class="fld"><label>النوع / التصنيف</label><input data-k="kind" list="kl" dir="auto" type="text" value="${esc(d.kind)}" placeholder="Documentary"><datalist id="kl">${kinds.map(k=>`<option value="${esc(k)}">`).join('')}</datalist><small>نفس الكلمة = نفس التصنيف</small></div>${F(d,'year','السنة')}</div>
+ ${F(d,'role','دورك بالعمل',{ph:'Direction & Edit'})}
+ ${F(d,'video','رابط الفيديو',{ltr:1,ph:'https://youtube.com/watch?v=…',hint:'يدعم YouTube و Vimeo، أو رابط مباشر لملف mp4. اتركه فاضي لو ما في فيديو.'})}
+ <div class="fld"><label>صورة الغلاف (اختياري)</label><div id="cvr"></div></div>
+ <div class="fld"><label>لون التوهج</label><div class="swatches" id="sw">${GLOWS.map(c=>`<button type="button" data-c="${c}" style="background:${c}" class="${c===d.glow?'on':''}"></button>`).join('')}<input type="color" id="col" value="${/^#[0-9a-f]{6}$/i.test(d.glow)?d.glow:'#14558a'}"></div></div>
+ ${SW(d,'visible','إظهار العمل بالموقع')}
+ <div class="foot"><button class="btn" type="button" id="mc">إلغاء</button><button class="btn primary" type="button" id="ms">حفظ</button></div>`,m=>{
+  bind(m,d);imageField($('#cvr',m),d,'cover',{maxW:900,maxH:700,limit:420000,note:'بتتصغّر أوتوماتيك. نسبة 16:9 أفضل.',emptyText:'بدون غلاف'});
+  const setC=c=>{d.glow=c;$$('#sw button',m).forEach(b=>b.classList.toggle('on',b.dataset.c===c));$('#col',m).value=c};
+  $$('#sw button',m).forEach(b=>b.onclick=()=>setC(b.dataset.c));$('#col',m).oninput=e=>{d.glow=e.target.value;$$('#sw button',m).forEach(b=>b.classList.remove('on'))};
+  $('#mx',m).onclick=$('#mc',m).onclick=closeModal;
+  $('#ms',m).onclick=async e=>{if(!d.title.trim()){toast('اكتب عنوان العمل','bad');return}const btn=e.target;btn.disabled=true;
+   try{const rec={title:d.title.trim(),kind:(d.kind||'').trim(),role:(d.role||'').trim(),year:String(d.year||'').trim(),glow:d.glow||'#14558a',video:(d.video||'').trim(),cover:d.cover||'',visible:d.visible!==false};
+    if(isNew){const id='w_'+Date.now().toString(36);rec.order=(S.works.reduce((a,x)=>Math.max(a,x.order||0),0))+1;await fb.setDoc(fb.doc(db,'works',id),rec);S.works.push({...rec,id})}
+    else{rec.order=w.order||1;await fb.setDoc(fb.doc(db,'works',w.id),rec);Object.assign(w,rec)}
+    await touchWorksFlag();closeModal();toast('تم الحفظ ✓','good');P.works($('#view'))}catch(er){toast(errMsg(er),'bad');btn.disabled=false}}})}
+
+P.about=v=>{const a=S.about;
+ v.innerHTML=`<div class="card"><h3>العنوان والوصف</h3>${F(a,'title','العنوان')}${F(a,'text','الوصف',{area:1,rows:6,hint:'سطر جديد = فقرة جديدة'})}</div>
+ <div class="card"><h3>الكلمات تحت الوصف</h3><div id="chips"></div></div>
+ <div class="card"><h3>صورة الوصف (البانر)</h3><p class="desc">بتتعرض بعرض كامل، فالأفضل صورة عريضة.</p><div id="imgAbout"></div></div>${saveBar('about')}`;
+ bind(v,a);chipsEditor($('#chips'),a.chips);imageField($('#imgAbout'),a,'image',{maxW:1600,maxH:1000,limit:780000,note:'بتتصغّر أوتوماتيك',emptyText:'الصورة الأصلية'})};
+
+P.contact=v=>{const c=S.contact;
+ v.innerHTML=`<div class="card"><h3>العنوان</h3>${F(c,'title','العنوان الكبير',{area:1,rows:2,hint:'سطر جديد = سطر جديد بالعنوان'})}</div>
+ <div class="card"><h3>الإيميل</h3>${F(c,'email','البريد الإلكتروني',{ltr:1,type:'email'})}</div>
+ <div class="card"><h3>روابط التواصل</h3><p class="desc">Instagram, WhatsApp, Vimeo… أي رابط. رقم واتساب: https://wa.me/970XXXXXXXXX</p><div id="links"></div></div>
+ <div class="card"><h3>زر السيرة الذاتية</h3>${F(c,'cvLabel','نص الزر')}</div>${saveBar('contact')}`;
+ bind(v,c);linksEditor($('#links'),c.links)};
+
+P.footer=v=>{const f=S.footer;
+ v.innerHTML=`<div class="card"><h3>نص الفوتر</h3>${F(f,'text','النص',{hint:'مثال: © 2026 Mhammed Shubair'})}</div>
+ <div class="card"><h3>روابط الفوتر</h3><p class="desc">بتظهر على يمين الفوتر.</p><div id="links"></div></div>${saveBar('footer')}`;
+ bind(v,f);linksEditor($('#links'),f.links)};
+
+P.cv=v=>{const c=S.cv,h=S.hero;
+ v.innerHTML=`<div class="card"><h3>إظهار زر الـ CV</h3>${SW(h,'showCv','إظهار أزرار تحميل السيرة الذاتية بالموقع')}</div>
+ <div class="card"><h3>ملف الـ CV (PDF)</h3><p class="desc">الحد الأقصى حوالي 650KB. إذا كان أكبر استخدم رابط خارجي (Google Drive مثلاً).</p>
+ <div id="cvst" style="margin-bottom:14px"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><label class="btn primary" style="cursor:pointer">رفع ملف PDF<input id="cvf" type="file" accept="application/pdf" hidden></label><button class="btn danger" id="cvrm" type="button">حذف الملف</button></div></div>
+ <div class="card"><h3>أو رابط خارجي</h3>${F(c,'url','رابط الـ CV',{ltr:1,ph:'https://drive.google.com/…',hint:'بيشتغل إذا ما في ملف مرفوع.'})}</div>${saveBar('cv')}`;
+ bind(v,c);
+ const st=()=>{$('#cvst').innerHTML=c.data?`<span class="pill ok">ملف مرفوع: ${esc(c.fileName||'CV.pdf')} (${Math.round(c.data.length*.75/1024)}KB)</span> <a class="btn sm" download="${esc(c.fileName||'CV.pdf')}" href="${c.data}">معاينة / تنزيل</a>`:(c.url?'<span class="pill mid">يستخدم الرابط الخارجي</span>':'<span class="pill mid">ما في CV — الزر بيحمّل الملف المؤقت الموجود بالموقع</span>');$('#cvrm').hidden=!c.data};
+ st();$('#cvrm').onclick=()=>{c.data='';c.fileName='';setDirty(true);st()};
+ $('#cvf').onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.type!=='application/pdf'&&!/\.pdf$/i.test(f.name)){toast('لازم ملف PDF','bad');return}if(f.size>650*1024){toast('الملف أكبر من 650KB — صغّره أو استخدم رابط خارجي','bad');return}
+  const r=new FileReader();r.onload=()=>{c.data=String(r.result).replace(/^data:[^;]*;base64,/,'data:application/pdf;base64,');c.fileName=f.name.replace(/[^\w.\- ]/g,'_');setDirty(true);st();toast('تم رفع الملف — اضغط حفظ','good')};r.readAsDataURL(f);e.target.value=''}};
+
+P.setup=v=>{const mail=user?.email||'YOUR_EMAIL';
+ const rules=`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == '${mail}';
+    }
+    // محتوى الموقع: الكل يقرأ، فقط أنت تكتب
+    match /site/{doc}  { allow read: if true; allow write: if isAdmin(); }
+    match /works/{id}  { allow read: if true; allow write: if isAdmin(); }
+    // الإحصائيات: الزوار يزيدون العدادات فقط، وأنت بس تقرأها
+    match /stats/{doc} {
+      allow read, delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().hasOnly(['views','works','cv','contact']);
+    }
+  }
+}`;
+ v.innerHTML=`<div class="card"><h3>حالة الاتصال</h3><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="pill ok">مسجّل دخول: <span dir="ltr">${esc(user?.email||'')}</span></span><span class="pill ok">المشروع: ${CFG.projectId}</span><button class="btn sm" id="tst" type="button">اختبار القراءة والكتابة</button></div><p id="tres" style="margin-top:12px;font-size:14px"></p></div>
+ <div class="card"><h3>خطوات التفعيل (مرة وحدة)</h3><ol class="steps">
+ <li>Firebase Console ← <b>Build → Firestore Database</b> ← Create database (اختر Production mode).</li>
+ <li><b>Build → Authentication</b> ← Sign-in method ← فعّل <b>Email/Password</b>.</li>
+ <li>Authentication ← Users ← <b>Add user</b> وأدخل إيميلك وكلمة مرور قوية — هذا حسابك للدخول هنا.</li>
+ <li>Firestore ← تبويب <b>Rules</b> ← امسح الموجود وألصق القواعد التالية ← Publish.</li>
+ <li>إذا رفعت اللوحة على استضافة: Authentication ← Settings ← <b>Authorized domains</b> ← أضف دومين الموقع.</li>
+ <li>ارفع <b>admin.html</b> بجانب <b>index.html</b> على نفس الاستضافة، وافتح /admin.html.</li></ol></div>
+ <div class="card"><h3>قواعد Firestore (Rules)</h3><p class="desc">القواعد مكتوبة لإيميلك الحالي. هي اللي بتمنع أي حدا غيرك من التعديل.</p><pre class="code" id="rl">${esc(rules)}</pre><div style="margin-top:12px"><button class="btn" id="cprl" type="button">نسخ القواعد</button></div></div>
+ <div class="card"><h3>ملاحظات</h3><ul class="steps" style="gap:8px"><li>الصور والـ CV بتنحفظ داخل Firestore (ما في حاجة لـ Storage أو خطة مدفوعة)، وبتتصغّر أوتوماتيك.</li><li>مفتاح apiKey الموجود بالكود عام وطبيعي — الحماية الحقيقية من القواعد فوق.</li><li>الموقع بيحمّل التعديلات خلال ثواني من الحفظ.</li></ul></div>`;
+ $('#cprl').onclick=async()=>{try{await navigator.clipboard.writeText(rules);toast('تم النسخ ✓','good')}catch(e){const r=document.createRange();r.selectNodeContents($('#rl'));getSelection().removeAllRanges();getSelection().addRange(r);toast('حدد النص وانسخه يدوياً')}};
+ $('#tst').onclick=async()=>{const o=$('#tres');o.textContent='جاري الاختبار…';let rd='❌',wr='❌';try{await fb.getDoc(fb.doc(db,'site','hero'));rd='✅'}catch(e){}
+  try{await fb.setDoc(fb.doc(db,'site','_ping'),{t:Date.now()});await fb.deleteDoc(fb.doc(db,'site','_ping'));wr='✅'}catch(e){}
+  o.innerHTML=`القراءة ${rd} &nbsp;|&nbsp; الكتابة ${wr}${wr==='❌'?'<br><span style="color:var(--red)">الكتابة مرفوضة: تأكد إنك لصقت القواعد وإن الإيميل مطابق لحسابك.</span>':''}`}};
+
+/* ================= Router ================= */
+const DOCS={hero:'hero',ticker:'ticker',about:'about',contact:'contact',footer:'footer',cv:'cv'};
+function renderNav(){$('#nav').innerHTML=NAV.map(([id,l,i])=>`<button class="nv ${id===cur?'on':''}" data-go="${id}" type="button">${ic(i)}<span>${l}</span></button>`).join('')}
+function go(id){if(!P[id])id='overview';cur=id;if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);document.body.classList.remove('nav-open');renderNav();$('#ptitle').textContent=NAV.find(x=>x[0]===id)[1];const v=$('#view');v.innerHTML='';P[id](v);scrollTo(0,0)}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){go(g.dataset.go);return}
+ const s=e.target.closest('[data-save]');if(s)saveDoc(s.dataset.save,s)});
+$('#burger').onclick=()=>document.body.classList.toggle('nav-open');$('#scrim').onclick=()=>document.body.classList.remove('nav-open');
+function clean(o){return JSON.parse(JSON.stringify(o))}
+async function saveDoc(name,btn){btn.disabled=true;const old=btn.textContent;btn.textContent='جاري الحفظ…';
+ try{if(name==='cv'){const d=clean(S.cv);d.fileName=d.fileName||'';await fb.setDoc(fb.doc(db,'site','cv'),d);await fb.setDoc(fb.doc(db,'site','hero'),{showCv:S.hero.showCv!==false},{merge:true})}
+  else if(name==='ticker'){S.ticker.items=S.ticker.items.filter(i=>i.icon).map(i=>({label:(i.label||'').trim(),icon:i.icon}));await fb.setDoc(fb.doc(db,'site','ticker'),clean(S.ticker))}
+  else if(name==='about'){S.about.chips=S.about.chips.filter(Boolean);await fb.setDoc(fb.doc(db,'site','about'),clean(S.about))}
+  else if(name==='contact'||name==='footer'){const k=name;S[k].links=S[k].links.filter(l=>(l.label||'').trim()&&(l.url||'').trim()).map(l=>({label:l.label.trim(),url:l.url.trim()}));await fb.setDoc(fb.doc(db,'site',k),clean(S[k]))}
+  else await fb.setDoc(fb.doc(db,'site',name),clean(S[name]));
+  S.exists[name]=true;setDirty(false);toast('تم الحفظ ✓ — التغييرات ظهرت بالموقع','good');if(name==='ticker'||name==='contact'||name==='footer')go(cur)}
+ catch(e){toast(errMsg(e),'bad')}
+ btn.disabled=false;btn.textContent=old}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+
+/* ================= Data ================= */
+async function loadAll(){
+ const names=['hero','ticker','about','contact','footer','cv','settings'];
+ await Promise.all(names.map(async n=>{try{const s=await fb.getDoc(fb.doc(db,'site',n));S.exists[n]=s.exists();S[n]={...clone(DEF[n]),...(s.exists()?s.data():{})};if(n==='ticker'&&!Array.isArray(S[n].items))S[n].items=clone(DEF.ticker.items);if(n==='about'&&!Array.isArray(S[n].chips))S[n].chips=[];if((n==='contact'||n==='footer')&&!Array.isArray(S[n].links))S[n].links=[]}catch(e){if(/permission/.test(e.code||''))toast(errMsg(e),'bad')}}));
+ try{const w=await fb.getDocs(fb.collection(db,'works'));S.works=w.docs.map(d=>({id:d.id,...d.data()}));sortWorks()}catch(e){S.works=[]}
+ try{const st=await fb.getDoc(fb.doc(db,'stats','total'));S.stats=st.exists()?st.data():{}}catch(e){S.stats={}}}
+
+/* ================= Auth ================= */
+const AERR={'auth/invalid-credential':'الإيميل أو كلمة المرور غير صحيحة','auth/wrong-password':'كلمة المرور غير صحيحة','auth/user-not-found':'ما في حساب بهذا الإيميل','auth/invalid-email':'صيغة الإيميل غير صحيحة','auth/too-many-requests':'محاولات كثيرة — جرّب بعد شوي','auth/network-request-failed':'ما في اتصال بالإنترنت','auth/operation-not-supported-in-this-environment':'افتح اللوحة من رابط الموقع المستضاف (https) وليس كملف','auth/unauthorized-domain':'هذا الدومين غير مضاف في Authorized domains','auth/operation-not-allowed':'فعّل Email/Password من Firebase → Authentication'};
+function showFatal(msg){$('#boot').hidden=true;$('#login').hidden=false;$('#lform').innerHTML=`<p class="err" style="min-height:0">${msg}</p>`}
+async function boot(){
+ try{const [A,Au,Fs]=await Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-firestore.js')]);
+  fb={...Au,...Fs};const app=A.initializeApp(CFG);auth=fb.getAuth(app);db=fb.initializeFirestore?fb.initializeFirestore(app,{experimentalAutoDetectLongPolling:true}):fb.getFirestore(app)}
+ catch(e){showFatal('تعذر تحميل Firebase. تأكد من الاتصال بالإنترنت وأعد المحاولة.');return}
+ fb.onAuthStateChanged(auth,async u=>{user=u;$('#boot').hidden=true;
+  if(!u){$('#app').hidden=true;$('#login').hidden=false;return}
+  $('#login').hidden=true;$('#app').hidden=false;$('#view').innerHTML='<div class="empty"><div class="spin" style="margin:0 auto 14px"></div>جاري التحميل…</div>';
+  await loadAll();const h=location.hash.slice(1);go(P[h]?h:'overview')})}
+$('#lform').addEventListener('submit',async e=>{e.preventDefault();const b=$('#lbtn'),er=$('#lerr');er.textContent='';const em=$('#lem').value.trim(),pw=$('#lpw').value;if(!em||!pw){er.textContent='اكتب الإيميل وكلمة المرور';return}
+ b.disabled=true;b.textContent='جاري الدخول…';try{await fb.signInWithEmailAndPassword(auth,em,pw)}catch(x){er.textContent=AERR[x.code]||('تعذر الدخول ('+(x.code||'خطأ')+')')}b.disabled=false;b.textContent='دخول'});
+$('#lreset').addEventListener('click',async()=>{const er=$('#lerr'),em=$('#lem').value.trim();if(!em){er.textContent='اكتب إيميلك أولاً ثم اضغط «نسيت كلمة المرور»';return}try{await fb.sendPasswordResetEmail(auth,em);er.style.color='var(--green)';er.textContent='أرسلنا رابط استعادة كلمة المرور لإيميلك'}catch(x){er.style.color='';er.textContent=AERR[x.code]||'تعذر الإرسال'}});
+$('#logout').addEventListener('click',async()=>{if(dirty&&!confirm('في تغييرات غير محفوظة، تسجيل الخروج؟'))return;setDirty(false);await fb.signOut(auth)});
+boot();
+</script>
+</body>
+</html>
